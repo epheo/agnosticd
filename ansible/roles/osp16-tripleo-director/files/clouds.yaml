@@ -1,0 +1,14 @@
+clouds:
+  openstack:
+    auth:
+      auth_url: https://10.42.34.17:13000
+      password: redhat
+      project_id: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      project_name: xxxxxxxxxxxx
+      user_domain_name: Default
+      username: xxxxxxxx
+    cacert: /home/stack/ssl/ca.crt.pem
+    endpoint_type: public
+    identity_api_version: "3"
+    region_name: regionOne
+    verify: true

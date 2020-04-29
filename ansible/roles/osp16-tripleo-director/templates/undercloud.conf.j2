@@ -1,0 +1,32 @@
+[DEFAULT]
+
+overcloud_domain_name = {{ customer_name }}.lab
+
+local_ip = {{ undercloud_ip }}/244
+local_interface = {{ undercloud_br_nic }}
+local_mtu = 1500
+
+undercloud_public_host = {{ undercloud_public }}
+undercloud_admin_host = {{ undercloud_admin }}
+
+container_images_file = /home/stack/containers-prepare-parameter.yaml
+
+undercloud_ntp_servers = {{ ntp_ip }}
+
+[ctlplane-subnet]
+cidr = {{ ctlplane_net.subnet }}
+dhcp_start = {{ ctlplane_net.dhcp_start }}
+dhcp_end = {{ ctlplane_net.dhcp_end }}
+inspection_iprange = {{ ctlplane_net.inspection_iprange }}
+gateway = {{ ctlplane_net.gateway }}
+masquerade = true
+
+{% if enable_uefi is sameas true %}
+ipxe_enabled = true
+inspection_enable_uefi = true
+{% endif %}
+
+{% if undercloud_custom_env is defined %}
+custom_env_files = {{ undercloud_custom_env }}
+{% endif %}
+

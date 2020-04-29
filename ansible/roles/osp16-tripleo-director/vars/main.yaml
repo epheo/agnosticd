@@ -1,0 +1,90 @@
+---
+
+enable_sriov: False
+enable_ssl: False
+enable_stf: False
+enable_ovs: True
+enable_ironic: False
+
+undercloud_ip: '10.42.1.7'
+dns_ip: '10.42.1.4'
+ntp_ip: '10.42.1.4'
+
+# saf_route: ''
+# saf_port: ''
+
+overcloud_vip: 10.42.42.50
+internal_vip: 10.42.2.50
+redis_vip: 10.42.2.51
+# control_vip: ''
+# storage_vip: ''
+# storagemgmt_vip: ''
+
+ctlplane_net:
+  subnet: '10.42.1.0/24'
+  dhcp_start: '10.42.1.101'
+  dhcp_end: '10.42.1.150'
+  inspection_iprange: '10.42.1.151,10.42.1.200'
+  gateway: '10.42.1.1'
+
+internal_net:
+  vlanid: 422
+  subnet: '10.42.2.0/24'
+  pool_start: '10.42.2.101'
+  pool_end: '10.42.2.200'
+
+storage_net:
+  vlanid: 428
+  subnet: '10.42.8.0/24'
+  pool_start: '10.42.8.101'
+  pool_end: '10.42.8.200'
+
+storagemgmt_net:
+  vlanid: 429
+  subnet: '10.42.9.0/24'
+  pool_start: '10.42.9.101'
+  pool_end: '10.42.9.200'
+
+tenant_net:
+  vlanid: 424
+  subnet: '10.42.4.0/24'
+  pool_start: '10.42.4.101'
+  pool_end: '10.42.4.200'
+
+external_net:
+  vlanid: 425
+  subnet: "10.42.42.0/24"
+  gateway: '10.42.42.1'
+  pool_start: '10.42.42.101'
+  pool_end: '10.42.42.200'
+  fip_pool_start: "10.42.42.10"
+  fip_pool_end: "10.42.42.60"
+
+external_guest_net:
+  vlanid: 426
+  subnet: "10.42.6.0/24"
+  gateway: '10.42.6.1'
+  fip_pool_start: "10.42.6.10"
+  fip_pool_end: "10.42.6.200"
+
+provider_net:
+  vlanid: 427
+
+undercloud_br_nic: eth1
+
+
+registry:
+  ip: '{{ undercloud_ip }}'
+  port: '8787'
+  namespace: 'registry.access.redhat.com/rhosp13'
+  images: '/home/stack/templates/local_registry_images.yaml'
+  env: '/home/stack/templates/overcloud_images.yaml'
+
+ssl:
+  countryname: 'FR'
+  provincename: 'Paris'
+  localityname: 'IdF'
+  orgname: 'epheo'
+  orgunit: 'eu'
+  commonname: 'lab'
+  emailaddress: 'lab@epheo.eu'

@@ -1,0 +1,70 @@
+- name: Step 000 Pre Infrastructure
+  hosts: localhost
+  gather_facts: false
+  become: false
+  tasks:
+    - debug:
+        msg: "Step 000 Pre Infrastructure"
+    
+    ## Subscribe to RHN
+    - debug: msg="Get RHN Status"
+      changed_when: true
+      notify: get_rhn_status
+    - meta: flush_handlers
+
+    - name: Unregister system
+      become: yes
+      shell: "subscription-manager unregister"
+      when: rhn_status.stdout == 'Invalid'
+      notify: get_rhn_status
+    - meta: flush_handlers
+
+    - name: Register system
+      become: yes
+      shell: |
+        subscription-manager register \
+          --org={{ subscription.org }} \
+          --activationkey={{ subscription.activation_key }}
+      when: rhn_status.stdout == 'Unknown'
+      notify: get_rhn_status
+    - meta: flush_handlers
+
+    - name: Check for already consumed subscriptions
+      become: yes
+      shell: "subscription-manager list --consumed |grep 'Red Hat OpenStack'"
+      register: already_defined_subs
+      when: rhn_status.stdout == 'Current'
+
+    - debug:
+        var: already_defined_subs.stdout
+
+    - name: Get Pool ID
+      become: yes
+      shell: |
+        subscription-manager list \
+          --available --all \
+          --matches="Red Hat OpenStack" |grep "Pool ID" |awk '{print $3}' |head -n1
+      register: pool_id
+      when: already_defined_subs.stdout == ""
+
+    - debug:
+        var: pool_id
+
+    - name: Attach Pool ID
+      become: yes
+      shell: |
+        subscription-manager attach --pool={{ pool_id.stdout }}
+      when: already_defined_subs.stdout == ""
+    
+    - name: Disable repositories
+      become: yes
+      shell: |
+        subscription-manager repos --disable=*
+
+    - name: Subscribe repositories
+      become: yes
+      shell: |
+        subscription-manager repos --enable={{ item }}
+      loop: "{{ enable_repos }}"
+
+- include_tasks: update.yaml

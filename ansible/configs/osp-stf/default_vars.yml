@@ -5,33 +5,48 @@
 ################################################################################
 ## Environment Sizing
 
-bastion_instance_type:
+director_instance_type:
   ec2: "t2.medium"
   azure: Standard_A2_V2
   osp: 2c2g30d
 
-bastion_instance_image: RHEL75
-
-node_instance_type:
+controller_instance_type:
   ec2: "t2.medium"
   azure: Standard_A2_V2
   osp: 2c2g30d
 
-# How many do you want for each instance type
-node_instance_count: 1
+compute_instance_type:
+  ec2: "t2.medium"
+  azure: Standard_A2_V2
+  osp: 2c2g30d
+
+stf_instance_type:
+  ec2: "t2.medium"
+  azure: Standard_A2_V2
+  osp: 2c2g30d
+
+director_instance_image: rhel-8.1
+controller_instance_image: rhel-8.1
+compute_instance_image: rhel-8.1
+stf_instance_image: rhel-8.1
+
+controller_instance_count: 1
+compute_instance_count: 2
+stf_instance_count: 3
+
 
 # Environment Instances
 instances:
-  - name: "bastion"
+  - name: "director"
     count: 1
     unique: true
     public_dns: true
     dns_loadbalancer: false
-    image: "{{ bastion_instance_image }}"
-    flavor: "{{ bastion_instance_type }}"
+    image: "{{ director_instance_image }}"
+    flavor: "{{ director_instance_type }}"
     tags:
       - key: "AnsibleGroup"
-        value: "bastions"
+        value: "undercloud_nodes"
       - key: "ostype"
         value: "linux"
       - key: "instance_filter"
@@ -42,15 +57,47 @@ instances:
     security_groups:
       - BastionSG
 
-  - name: "node"
-    count: "{{node_instance_count}}"
+  - name: "controller"
+    count: "{{ controller_instance_count }}"
     public_dns: false
     dns_loadbalancer: false
-    image: "{{ node_instance_image }}"
-    flavor: "{{ node_instance_type }}"
+    image: "{{ controller_instance_image }}"
+    flavor: "{{ controller_instance_type }}"
     tags:
       - key: "AnsibleGroup"
-        value: "nodes"
+        value: "controller_nodes"
+      - key: "ostype"
+        value: "linux"
+      - key: "instance_filter"
+        value: "{{ env_type }}-{{ email }}"
+    security_groups:
+      - DefaultSG
+
+  - name: "compute"
+    count: "{{ compute_instance_count }}"
+    public_dns: false
+    dns_loadbalancer: false
+    image: "{{ compute_instance_image }}"
+    flavor: "{{ compute_instance_type }}"
+    tags:
+      - key: "AnsibleGroup"
+        value: "compute_nodes"
+      - key: "ostype"
+        value: "linux"
+      - key: "instance_filter"
+        value: "{{ env_type }}-{{ email }}"
+    security_groups:
+      - DefaultSG
+
+  - name: "stf"
+    count: "{{ stf_instance_count }}"
+    public_dns: false
+    dns_loadbalancer: false
+    image: "{{ stf_instance_image }}"
+    flavor: "{{ stf_instance_type }}"
+    tags:
+      - key: "AnsibleGroup"
+        value: "stf_nodes"
       - key: "ostype"
         value: "linux"
       - key: "instance_filter"
@@ -88,9 +135,12 @@ common_packages:
   - at
 
 rhel_repos:
-  - rhel-7-server-rpms
-  - rhel-7-server-extras-rpms
-  - epel-release-latest-7
+  - rhel-8-for-x86_64-baseos-rpms
+  - rhel-8-for-x86_64-appstream-rpms
+  - rhel-8-for-x86_64-highavailability-rpms
+  - ansible-2.8-for-rhel-8-x86_64-rpms
+  - openstack-16-for-rhel-8-x86_64-rpms
+  - fast-datapath-for-rhel-8-x86_64-rpm
 
 ###V2WORK, these should just be set as default listed in the documentation
 install_bastion: true

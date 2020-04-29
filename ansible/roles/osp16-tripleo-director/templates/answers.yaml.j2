@@ -1,0 +1,15 @@
+templates: /usr/share/openstack-tripleo-heat-templates/
+environments:
+  - /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml
+  - /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
+{% if enable_ssl is sameas true %}
+  - /usr/share/openstack-tripleo-heat-templates/environments/ssl/tls-endpoints-public-dns.yaml
+  - /home/stack/templates/environments/inject-trust-anchor-hiera.yaml
+  - /home/stack/templates/environments/enable-tls.yaml
+{% endif %}
+  - /home/stack/containers-prepare-parameter.yaml
+  - /home/stack/templates/environments/global.yaml
+  - /home/stack/templates/environments/network.yaml
+{% if enable_stf is sameas true %}
+  - /home/stack/templates/environments/stf.yaml
+{% endif %}
