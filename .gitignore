@@ -34,3 +34,5 @@ __pycache__
 
 dynamic-cache
 dynamic-roles
+
+ansible/configs/*/my_vars_osp.yml

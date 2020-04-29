@@ -1,0 +1,65 @@
+= OTF for OSP Demo
+
+
+== Overview
+
+An OpenStack Cluster, 
+An OpenShift Cluster,
+The STF Operator on OpenShift monitoring OSP
+
+
+== Supported Cloud Providers
+
+
+* OpenStack
+
+== Review the Env_Type variable file
+
+The link:./env_vars.yml[./env_vars.yml] file contains all the variables you need to define to control the deployment of your environment.
+
+This includes the ability to:
+
+* Change the number of machines deployed
+* Changed the operating system image (e.g. Ansible AMI or similar)
+* Change the tags carried by any instances
+* Change the base packages installed 
+* Change/set the `ansible_user` and `remote_user`
+
+These can be over-ridden at `ansible-playbook` runtime via `-e` options or perhaps more compactly by overriding vars in your own var file and invoking via `-e @my_env_vars.yml`
+
+For further information on customizing images consult the link:../../../docs/Creating_a_config.adoc[Creating a Config Guide] 
+
+
+== Running Ansible Playbook
+
+
+You can run the playbook with the following arguments, from the `ansible` directory, to overwrite the default variable values:
+[source,bash]
+
+## Create your project on https://rhpds.redhat.com/
+
+## Populate your `cat .config/openstack/clouds.yaml`
+
+clouds:
+  xxxx-xxxx-project:
+    auth:
+      auth_url: http://xxx.xx.xxx.xx:5000/v3
+      username: xxxx-xxxx-user
+      project_name: xxxx-xxxx-project
+      project_id: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      user_domain_name: Default
+      password: xxxxxxxxxxxx
+    region_name: regionOne
+    interface: public
+    identity_api_version: 3
+
+## Create and activate venv 
+
+mkdir -p ~/dev/agnosticd/ && cd ~/dev/agnosticd/
+python3 -m venv .
+source ~/dev/agnosticd/bin/activate
+
+
+ansible-playbook main.yml -e @~/secrets.yaml -e @configs/osp-stf/my_vars_osp.yml
+
+
